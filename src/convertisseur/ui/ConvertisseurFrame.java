@@ -6,7 +6,6 @@ import convertisseur.util.ValidationUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 public class ConvertisseurFrame extends JFrame {
 
@@ -15,8 +14,7 @@ public class ConvertisseurFrame extends JFrame {
     private JComboBox<String> uniteArrivee;
     private JLabel resultat;
 
-    private JRadioButton poidsRadio;
-    private JRadioButton distanceRadio;
+    private String categorie = "Poids";
 
     public ConvertisseurFrame() {
 
@@ -25,17 +23,9 @@ public class ConvertisseurFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        setLayout(new GridLayout(6,2,5,5));
+        creerMenu();
 
-        poidsRadio = new JRadioButton("Poids", true);
-        distanceRadio = new JRadioButton("Distance");
-
-        ButtonGroup group = new ButtonGroup();
-        group.add(poidsRadio);
-        group.add(distanceRadio);
-
-        add(poidsRadio);
-        add(distanceRadio);
+        setLayout(new GridLayout(5,2,5,5));
 
         add(new JLabel("Valeur :"));
 
@@ -63,9 +53,6 @@ public class ConvertisseurFrame extends JFrame {
 
         mettreAJourUnites();
 
-        poidsRadio.addActionListener(e -> mettreAJourUnites());
-        distanceRadio.addActionListener(e -> mettreAJourUnites());
-
         convertirBtn.addActionListener(e -> convertir());
 
         inverserBtn.addActionListener(e -> inverser());
@@ -73,9 +60,36 @@ public class ConvertisseurFrame extends JFrame {
         setVisible(true);
     }
 
-    private void mettreAJourUnites() {
+    private void creerMenu(){
 
-        if (poidsRadio.isSelected()) {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu menuCategorie = new JMenu("Catégories");
+
+        JMenuItem poidsItem = new JMenuItem("Poids");
+        JMenuItem distanceItem = new JMenuItem("Distance");
+
+        poidsItem.addActionListener(e -> {
+            categorie = "Poids";
+            mettreAJourUnites();
+        });
+
+        distanceItem.addActionListener(e -> {
+            categorie = "Distance";
+            mettreAJourUnites();
+        });
+
+        menuCategorie.add(poidsItem);
+        menuCategorie.add(distanceItem);
+
+        menuBar.add(menuCategorie);
+
+        setJMenuBar(menuBar);
+    }
+
+    private void mettreAJourUnites(){
+
+        if(categorie.equals("Poids")){
 
             String[] poids = {"Gramme","Kilogramme","Livre"};
 
@@ -83,7 +97,7 @@ public class ConvertisseurFrame extends JFrame {
             uniteArrivee.setModel(new DefaultComboBoxModel<>(poids));
         }
 
-        else {
+        else{
 
             String[] distance = {"Metre","Kilometre","Mile"};
 
@@ -93,7 +107,7 @@ public class ConvertisseurFrame extends JFrame {
 
     }
 
-    private void convertir() {
+    private void convertir(){
 
         if(!ValidationUtil.estNombre(valeurField.getText())){
 
@@ -108,7 +122,7 @@ public class ConvertisseurFrame extends JFrame {
 
         double resultatConversion;
 
-        if(poidsRadio.isSelected()){
+        if(categorie.equals("Poids")){
 
             resultatConversion = PoidsConverter.convertir(valeur,de,vers);
         }
